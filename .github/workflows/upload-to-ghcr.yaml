@@ -8,17 +8,12 @@ permissions: {}
 jobs:
   release-to-ghcr:
     permissions:
-      contents: write # to push chart release and create a release (helm/chart-releaser-action)
       packages: write # needed for ghcr access
 
     runs-on: ubuntu-latest
     steps:
-
-      - name: Debug
-        run: |
-          env | sort
-
-      - uses: robinraju/release-downloader@v1.10
+      - name: Download Release Artifacts
+        uses: robinraju/release-downloader@v1.10
         with:
           tag: ${{ github.ref_name }}
 
@@ -42,7 +37,6 @@ jobs:
       - name: Push charts to GHCR
         run: |
           shopt -s nullglob
-          find .
           for pkg in .cr-release-packages/*.tgz; do
             if [ -z "${pkg:-}" ]; then
               break
